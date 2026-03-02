@@ -1,0 +1,31 @@
+// ============================================================
+// AkkaSync Plugin Manifest Template v1.0
+// 
+// Each plugin must include this manifest.json at the root of the zip package.
+// Describes the plugin's unique ID, version, and optional metadata.
+// Optional fields are commented out and have defaults if not specified.
+//
+// Notes:
+// - id and version should not be changed once published.
+// - entryAssembly defaults to "{id}.dll" if not set.
+// - displayName defaults to id if not set.
+// - enabled defaults to true if not set.
+// - hostVersion is optional; uncomment if needed for Host version check.
+// ============================================================
+
+{
+  "schemaVersion": "1.0",                        // Manifest specification version
+  "id": "AkkaSync.Plugins.Sink.Sqlite",       // Unique plugin ID (required)
+  "version": "1.0.0"                          // Plugin version (required, SemVer)
+
+  // Optional fields with defaults
+  // "displayName": "SQLite Sink Plugin",       // Defaults to id if not set
+  // "entryAssembly": "AkkaSync.Plugins.Sink.Sqlite.dll",  // Defaults to {id}.dll
+  // "enabled": true,                           // Defaults to true
+  // "hostVersion": ">=1.0.0 <2.0.0",          // Uncomment to specify Host compatibility
+  // "description": "Writes pipeline output data into a SQLite database.",
+  // "author": "Your Name or Organization",
+  // "targetFramework": "net8.0",
+  // "tags": ["sink", "sqlite", "database"],
+  // "entryType": "AkkaSync.Plugins.Sink.Sqlite.SqliteSinkPlugin"
+}
