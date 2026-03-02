@@ -1,0 +1,141 @@
+name: Plugins Release
+
+on:
+  push:
+    tags:
+      - 'plugin-release-*' # plugin-release-2026-03-02
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zip python3
+
+      - name: Build & Package Plugins
+        run: |
+          mkdir -p release
+          mkdir -p output
+
+          for plugin in src/*; do
+            manifest="$plugin/manifest.json"
+            
+            if [ -f "$manifest" ]; then
+              # Read 'enabled' from manifest, default true
+              enabled=$(jq -r '.enabled // true' "$manifest")
+
+              if [ "$enabled" = "true" ]; then
+                id=$(jq -r .id "$manifest")
+                version=$(jq -r .version "$manifest")
+
+                echo "Building $id v$version"
+
+                dotnet publish "$plugin" \
+                  -c Release \
+                  -o ./output/$(basename "$plugin")
+
+                cp "$manifest" ./output/$(basename "$plugin")/
+                zip -j ./release/"$id".zip \
+                  ./output/$(basename "$plugin")/*
+              else
+                echo "Skipping $plugin: manifest indicates disabled"
+              fi
+            else
+              echo "Skipping $plugin: manifest.json not found"
+            fi
+          done
+
+      - name: Generate registry.json
+        run: |
+          python3 <<EOF
+          import os
+          import json
+          import hashlib
+
+          release_dir = "release"
+          tag = "${{ github.ref_name }}"
+          repo = "${{ github.repository }}"
+
+          plugins = []
+
+          for file in os.listdir(release_dir):
+              if file.endswith(".zip"):
+                  path = os.path.join(release_dir, file)
+
+                  # 计算 sha256
+                  sha256 = hashlib.sha256()
+                  with open(path, "rb") as f:
+                      for chunk in iter(lambda: f.read(4096), b""):
+                          sha256.update(chunk)
+
+                  # 从 zip 内的 manifest.json 读取 id 和 version
+                  import zipfile
+                  with zipfile.ZipFile(path, 'r') as zipf:
+                      with zipf.open('manifest.json') as mf:
+                          manifest = json.load(mf)
+                          plugin_id = manifest['id']
+                          version = manifest['version']
+
+                  url = f"https://github.com/{repo}/releases/download/{tag}/{file}"
+
+                  plugins.append({
+                      "id": plugin_id,
+                      "version": version,
+                      "url": url,
+                      "checksum": f"sha256:{sha256.hexdigest()}"
+                  })
+
+          registry = {
+              "releaseTag": tag,
+              "plugins": plugins
+          }
+
+          with open(os.path.join(".", "registry.json"), "w") as f:
+              json.dump(registry, f, indent=2)
+
+          print("registry.json generated.")
+          EOF
+
+      - name: Create Release & Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Pages Repo
+        uses: actions/checkout@v4
+        with:
+          repository: akkasync/akkasync.github.io
+          path: pages-repo
+          token: ${{secrets.PAT_TOKEN}}
+
+      - name: Copy registry.json to Pages
+        run: |
+          mkdir -p pages-repo/static/plugins
+          cp ./registry.json pages-repo/static/plugins/registry.json
+
+      - name: Commit & Push Pages
+        run: |
+          cd pages-repo
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add static/plugins/registry.json
+          git commit -m "Update plugin registry from release ${{ github.ref_name }}" || echo "No changes to commit"
+          git push
