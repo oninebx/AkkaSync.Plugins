@@ -7,6 +7,7 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
+	<!--
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
 	</ItemGroup>
@@ -15,11 +16,11 @@
 		<PackageReference Include="AkkaSync.Abstraction" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
 	</ItemGroup>
-
+-->
   <ItemGroup>
-    <PackageReference Include="AkkaSync.Abstractions" Version="1.0.1" />
+    <PackageReference Include="AkkaSync.Abstractions" Version="1.0.1" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.22" />
-    
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
