@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="AkkaSync.Abstractions" Version="1.0.1" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.22" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <PropertyGroup>
