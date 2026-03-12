@@ -65,7 +65,6 @@ jobs:
           import os
           import json
           import hashlib
-          import sys
 
           release_dir = "release"
           tag = "${{ github.ref_name }}"
@@ -77,15 +76,19 @@ jobs:
               if file.endswith(".zip"):
                   path = os.path.join(release_dir, file)
 
+                  # 计算 sha256
                   sha256 = hashlib.sha256()
                   with open(path, "rb") as f:
                       for chunk in iter(lambda: f.read(4096), b""):
                           sha256.update(chunk)
-                  name_part = file[:-4]
-                  if "-v" in name_part:
-                      plugin_id, version = name_part.split("-v", 1)
-                  else:
-                      continue
+
+                  # 从 zip 内的 manifest.json 读取 id 和 version
+                  import zipfile
+                  with zipfile.ZipFile(path, 'r') as zipf:
+                      with zipf.open('manifest.json') as mf:
+                          manifest = json.load(mf)
+                          plugin_id = manifest['id']
+                          version = manifest['version']
 
                   url = f"https://github.com/{repo}/releases/download/{tag}/{file}"
 
@@ -95,24 +98,44 @@ jobs:
                       "url": url,
                       "checksum": f"sha256:{sha256.hexdigest()}"
                   })
-                  
+
           registry = {
               "releaseTag": tag,
               "plugins": plugins
           }
 
-          with open(os.path.join(release_dir, "registry.json"), "w") as f:
+          with open(os.path.join(".", "registry.json"), "w") as f:
               json.dump(registry, f, indent=2)
 
           print("registry.json generated.")
           EOF
-          
+
       - name: Create Release & Upload Assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           files: |
             release/*.zip
-            release/registry.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Pages Repo
+        uses: actions/checkout@v4
+        with:
+          repository: akkasync/akkasync.github.io
+          path: pages-repo
+          token: ${{secrets.PAT_TOKEN}}
+
+      - name: Copy registry.json to Pages
+        run: |
+          mkdir -p pages-repo/static/plugins
+          cp ./registry.json pages-repo/static/plugins/registry.json
+
+      - name: Commit & Push Pages
+        run: |
+          cd pages-repo
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add static/plugins/registry.json
+          git commit -m "Update plugin registry from release ${{ github.ref_name }}" || echo "No changes to commit"
+          git push
