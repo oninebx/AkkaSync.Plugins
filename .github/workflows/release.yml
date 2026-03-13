@@ -49,8 +49,9 @@ jobs:
                   -o ./output/$(basename "$plugin")
 
                 cp "$manifest" ./output/$(basename "$plugin")/
-                zip -j ./release/"$id".zip \
-                  ./output/$(basename "$plugin")/*
+                cd ./output/$(basename "$plugin")
+                zip -r ../../release/"$id".zip .
+                cd -
               else
                 echo "Skipping $plugin: manifest indicates disabled"
               fi
