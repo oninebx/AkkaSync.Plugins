@@ -7,35 +7,13 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-	<!--
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-		<PackageReference Include="AkkaSync.Abstraction" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
-	</ItemGroup>
--->
   <ItemGroup>
-    <PackageReference Include="AkkaSync.Abstractions" Version="1.0.1" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.22" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" ExcludeAssets="runtime" />
+		<PackageReference Include="AkkaSync.Abstractions" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <PropertyGroup>
     <PluginOutputDir>../AkkaSync.Host/runtime/plugins</PluginOutputDir>
   </PropertyGroup>
-
-	<!--
-  <Target Name="CopyPluginToHost" AfterTargets="Build">
-    <Message Text="Copying plugin to Host plugins folder..." Importance="high" />
-    <MakeDir Directories="$(PluginOutputDir)" Condition="!Exists('$(PluginOutputDir)')" />
-    <Copy
-      SourceFiles="$(OutputPath)\$(AssemblyName).dll"
-      DestinationFolder="$(PluginOutputDir)"
-      SkipUnchangedFiles="true" />
-
-  </Target>
--->
 </Project>

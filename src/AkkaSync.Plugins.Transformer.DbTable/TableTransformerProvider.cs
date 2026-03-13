@@ -1,17 +1,22 @@
-using System;
-using System.Text.Json;
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
+using System.Text.Json;
 
 namespace AkkaSync.Plugins.Transformer.DbTable;
 
 public class TableTransformerProvider : IPluginProvider<ISyncTransformer>
 {
   public string Key => nameof(TableTransformerProvider);
+  private readonly ISyncEnvironment _environment;
+
+  public TableTransformerProvider(ISyncEnvironment environment)
+  {
+    _environment = environment;
+  }
 
   public IEnumerable<ISyncTransformer> Create(PluginSpec context, CancellationToken cancellationToken = default)
   {
-    var configFile = Path.Combine(AppContext.BaseDirectory, context.Parameters.Get<string>("transformers"));
+    var configFile = _environment.ResolvePath(context.Parameters.Get<string>("transformers"));
     if (!File.Exists(configFile))
     {
       throw new FileNotFoundException($"TableTransformerProvider config file not found: {configFile}");
@@ -20,9 +25,9 @@ public class TableTransformerProvider : IPluginProvider<ISyncTransformer>
 
     var specs = JsonSerializer.Deserialize<IReadOnlyList<TableTransformerSpec>>(json, new JsonSerializerOptions
     {
-        PropertyNameCaseInsensitive = true
+      PropertyNameCaseInsensitive = true
     });
-    if(specs == null || specs.Count == 0)
+    if (specs == null || specs.Count == 0)
     {
       throw new InvalidOperationException("TableTransformerProvider found no transformer specs in config file.");
     }

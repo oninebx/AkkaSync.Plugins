@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using SQLitePCL;
+using System.Collections.Immutable;
 
 namespace AkkaSync.Plugins.Sink.Sqlite
 {

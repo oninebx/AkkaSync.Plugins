@@ -1,4 +1,3 @@
-using System;
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;

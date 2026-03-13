@@ -1,0 +1,11 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="AkkaSync.Abstractions" Version="1.0.2" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"  />
+		<PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.22" />
+		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+</Project>

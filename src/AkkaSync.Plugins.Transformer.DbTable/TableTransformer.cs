@@ -1,4 +1,3 @@
-using System;
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 
@@ -13,7 +12,7 @@ public class TableTransformer : ISyncTransformer
 
   public TableTransformer(
     string table,
-    string produce, 
+    string produce,
     string[] dependsOn,
     Func<IReadOnlyDictionary<string, object?>, Dictionary<string, object?>> mapRow)
   {

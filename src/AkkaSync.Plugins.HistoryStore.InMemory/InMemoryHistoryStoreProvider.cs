@@ -1,10 +1,8 @@
-using System;
+using AkkaSync.Abstractions;
+using AkkaSync.Abstractions.Models;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using AkkaSync.Abstractions;
-using AkkaSync.Abstractions.Models;
 
 namespace AkkaSync.Plugins.HistoryStore.InMemory;
 
@@ -19,7 +17,7 @@ public class InMemoryHistoryStoreProvider : IPluginProvider<IHistoryStore>
     var key = GenerateKey(context.Parameters);
 
     var lazyStore = _stores.GetOrAdd(key,
-        _ => new Lazy<IHistoryStore>(() => new InMemoryHistoryStore(), 
+        _ => new Lazy<IHistoryStore>(() => new InMemoryHistoryStore(),
                                       LazyThreadSafetyMode.ExecutionAndPublication)
     );
 

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using AkkaSync.Abstractions;
+﻿using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace AkkaSync.Plugins.Sources;
 

@@ -1,4 +1,3 @@
-using System;
 using AkkaSync.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
