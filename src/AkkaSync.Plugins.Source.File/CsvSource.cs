@@ -42,6 +42,8 @@ public class CsvSource : ISyncSource
 
   public string ETag => _etag.Value;
 
+  public DataSourceIdentity DataSource => new("csv", "local", Path.GetDirectoryName(_filePath) ?? throw new ArgumentNullException(nameof(_filePath)));
+
   public async IAsyncEnumerable<TransformContext> ReadAsync(string? cursor, [EnumeratorCancellation] CancellationToken cancellationToken)
   {
     _ = int.TryParse(cursor, out int startRow);

@@ -22,6 +22,8 @@ namespace AkkaSync.Plugins.Sink.Sqlite
       raw.SQLITE_CONSTRAINT_FOREIGNKEY
     ];
 
+    public DataSourceIdentity Identity => new("sqlite", "local", ExtractDbName(_connectionString));
+
     public SqliteSink(string connectionString, ILogger<SqliteSink> logger)
     {
       _connectionString = connectionString;
@@ -114,6 +116,30 @@ namespace AkkaSync.Plugins.Sink.Sqlite
         }
       }
       _logger.LogInformation("Finished inserting rows into table {TableName}.", tableName);
+    }
+
+    private static string ExtractDbName(string connectionString)
+    {
+      if (string.IsNullOrWhiteSpace(connectionString))
+        throw new ArgumentException("Connection string cannot be null or empty.");
+
+      var builder = new SqliteConnectionStringBuilder(connectionString);
+
+      var dataSource = builder.DataSource;
+
+      if (string.IsNullOrWhiteSpace(dataSource))
+        throw new InvalidOperationException("Data Source not found in connection string.");
+
+      return NormalizePath(dataSource);
+    }
+
+    private static string NormalizePath(string path)
+    {
+      var fullPath = Path.GetFullPath(path);
+
+      return fullPath
+          .Replace("\\", "/")
+          .ToLowerInvariant();
     }
   }
 }

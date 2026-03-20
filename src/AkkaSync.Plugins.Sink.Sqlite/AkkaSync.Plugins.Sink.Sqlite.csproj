@@ -5,10 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+		<Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="AkkaSync.Abstractions" ExcludeAssets="runtime" />
+    <PackageReference Include="AkkaSync.Abstractions" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" ExcludeAssets="runtime" />
   </ItemGroup>
