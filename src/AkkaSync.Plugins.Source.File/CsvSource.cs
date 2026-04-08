@@ -2,6 +2,7 @@
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace AkkaSync.Plugins.Sources;
 
@@ -44,7 +45,7 @@ public class CsvSource : ISyncSource
 
   public DataSourceIdentity DataSource => new("csv", "local", Path.GetDirectoryName(_filePath) ?? throw new ArgumentNullException(nameof(_filePath)));
 
-  public async IAsyncEnumerable<TransformContext> ReadAsync(string? cursor, [EnumeratorCancellation] CancellationToken cancellationToken)
+  public async IAsyncEnumerable<(TransformContext? context, ErrorContext? error)> ReadAsync(string? cursor, [EnumeratorCancellation] CancellationToken cancellationToken)
   {
     _ = int.TryParse(cursor, out int startRow);
     using var reader = new StreamReader(_filePath);
@@ -54,7 +55,6 @@ public class CsvSource : ISyncSource
       yield break;
     }
     var headers = headerLine.Split(_delimiter);
-    int lineNumber = 1;
     int index = 0;
     while (index < startRow && !reader.EndOfStream)
     {
@@ -64,43 +64,50 @@ public class CsvSource : ISyncSource
     while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
     {
       var line = await reader.ReadLineAsync(cancellationToken);
+      index++;
       if (string.IsNullOrWhiteSpace(line))
       {
+        yield return (null, new ErrorContext("Sources.CSVSource", "Data row cannot be empty or whitespace", index.ToString())
+        {
+          Context = JsonSerializer.Serialize(new
+          {
+            FilePath = _filePath,
+            LineNumber = index,
+          })
+        });
         continue;
       }
-      lineNumber++;
+      
       string[] values;
-      try
-      {
-        values = ParseCsvLine(line, _delimiter);
-        if (values.Length != headers.Length)
-        {
-          throw new FormatException("Column count does not match header");
-        }
-      }
-      catch (FormatException ex)
-      {
-        _logger.LogWarning(ex, "CSV format error at line {Line} in file {File}", lineNumber, _filePath);
-        continue;
-      }
-      var record = new Dictionary<string, object?>();
-      for (int i = 0; i < headers.Length && i < values.Length; i++)
-      {
-        record[headers[i]] = values[i];
-      }
-      var ctx = new TransformContext(record)
-      {
-        MetaData = new Dictionary<string, object>
-        {
-          ["SourceType"] = "CSV",
-          ["FilePath"] = _filePath,
-          ["LineNumber"] = lineNumber,
-        },
-        Cursor = index.ToString()
-      };
 
-      yield return ctx;
-      index++;
+      TransformContext? context = null;
+      ErrorContext? error = null;
+      values = ParseCsvLine(line, _delimiter);
+      if (values.Length != headers.Length)
+      {
+        error = new ErrorContext("source", $"CSV format error at line {index} in file {_filePath}: Column count does not match header", index.ToString());
+      }
+      else
+      {
+        var record = new Dictionary<string, object?>();
+        for (int i = 0; i < headers.Length && i < values.Length; i++)
+        {
+          record[headers[i]] = values[i];
+        }
+        context = new TransformContext(record)
+        {
+          MetaData = new Dictionary<string, object>
+          {
+            ["SourceType"] = "CSV",
+            ["FilePath"] = _filePath,
+            ["LineNumber"] = index,
+          },
+          Cursor = index.ToString(),
+
+        };
+      }
+
+      yield return (context, error);
     }
   }
 

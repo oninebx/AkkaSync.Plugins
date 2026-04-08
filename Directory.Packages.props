@@ -1,9 +1,12 @@
 <Project>
 	<PropertyGroup>
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<AkkaSyncBaseVersion>1.0.4</AkkaSyncBaseVersion>
+		<AkkaSyncPackageVersion Condition="'$(Configuration)' == 'Debug'">$(AkkaSyncBaseVersion)-dev</AkkaSyncPackageVersion>
+		<AkkaSyncPackageVersion Condition="'$(Configuration)' == 'Release'">$(AkkaSyncBaseVersion)</AkkaSyncPackageVersion>
 	</PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AkkaSync.Abstractions" Version="1.0.3" />
+		<PackageVersion Include="AkkaSync.Abstractions" Version="$(AkkaSyncPackageVersion)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"  />
 		<PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.22" />
 		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
