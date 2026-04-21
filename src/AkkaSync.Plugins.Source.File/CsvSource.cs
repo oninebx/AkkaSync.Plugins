@@ -15,7 +15,7 @@ public class CsvSource : ISyncSource
   private readonly Lazy<string> _id;
   private readonly Lazy<string> _etag;
 
-  public CsvSource(string filePath, ISyncEnvironment environment, ILogger<CsvSource> logger, char delimiter = ',')
+  public CsvSource(string filePath, string pluginKey, ISyncEnvironment environment, ILogger<CsvSource> logger, char delimiter = ',')
   {
     _filePath = filePath;
     _delimiter = delimiter;
@@ -23,7 +23,7 @@ public class CsvSource : ISyncSource
 
     _id = new Lazy<string>(() =>
     {
-      return environment.ComputeSha256(Type, Key);
+      return environment.ComputeSha256(Type, QualifiedId);
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
     _etag = new Lazy<string>(() =>
@@ -33,9 +33,10 @@ public class CsvSource : ISyncSource
 
       return environment.ComputeSha256(info.Length.ToString(), info.LastWriteTimeUtc.Ticks.ToString());
     });
+    Key = pluginKey;
   }
 
-  public string Key => Path.GetFullPath(_filePath).Replace('\\', '/').ToLowerInvariant();
+  public string Key { get; init; }
 
   public string Type => "CSV";
 
@@ -43,7 +44,12 @@ public class CsvSource : ISyncSource
 
   public string ETag => _etag.Value;
 
-  public DataSourceIdentity DataSource => new("csv", "local", Path.GetDirectoryName(_filePath) ?? throw new ArgumentNullException(nameof(_filePath)));
+  //  Path.GetFullPath(_filePath).Replace('\\', '/').ToLowerInvariant();
+  public string QualifiedId => $"csv-{Path.GetFileNameWithoutExtension(_filePath).ToLowerInvariant()}";
+
+  public string Name => $"Extract from CSV";
+
+  
 
   public async IAsyncEnumerable<(TransformContext? context, ErrorContext? error)> ReadAsync(string? cursor, [EnumeratorCancellation] CancellationToken cancellationToken)
   {

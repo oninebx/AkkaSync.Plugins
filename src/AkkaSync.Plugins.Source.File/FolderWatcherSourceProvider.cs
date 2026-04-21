@@ -1,6 +1,7 @@
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace AkkaSync.Plugins.Sources;
 
@@ -18,22 +19,38 @@ public class FolderWatcherSourceProvider : IPluginProvider<ISyncSource>
 
   public IEnumerable<ISyncSource> Create(PluginSpec context, CancellationToken cancellationToken)
   {
-    var extension = context.Parameters["source"];
-    var path = _environment.ResolvePath(context.Parameters["folder"]) ?? context.Parameters["folder"];
+    if(!context.Parameters.TryGetProperty("source", out var sourceElement))
+    {
+      throw new InvalidOperationException("FolderWatcherSourceProvider requires a 'source' parameter.");
+    }
+    var extension = sourceElement.GetString();
+    if (string.IsNullOrEmpty(extension))
+    {
+      throw new InvalidOperationException("FolderWatcherSourceProvider requires a valid 'source' parameter.");
+    }
+    if(!context.Parameters.TryGetProperty("folder", out var folderElement))
+    {
+      throw new InvalidOperationException("FolderWatcherSourceProvider requires a 'folder' parameter.");
+    }
+    var folderPath = folderElement.GetString();
+    if (string.IsNullOrEmpty(folderPath)) {
+      throw new InvalidOperationException("FolderWatcherSourceProvider requires a valid 'folder' parameter.");
+    }
+    var path = _environment.ResolvePath(folderPath) ?? folderPath;
     var files = Directory.GetFiles(path, $"*.{extension}");
 
     foreach (var file in files)
     {
       cancellationToken.ThrowIfCancellationRequested();
       var name = Path.GetFileName(file);
-      switch (context.Parameters["source"])
+      switch (extension)
       {
         case "csv":
           var csvlogger = _factory.CreateLogger<CsvSource>();
-          yield return new CsvSource(file, _environment, csvlogger);
+          yield return new CsvSource(file, context.Key, _environment, csvlogger);
           break;
         default:
-          throw new NotSupportedException($"Source type {context.Parameters["source"]} is not supported.");
+          throw new NotSupportedException($"Source type {extension} is not supported.");
       }
     }
   }

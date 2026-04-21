@@ -1,16 +1,22 @@
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 
-namespace AkkaSync.Plugins.Transformer.DbTable;
+namespace AkkaSync.Plugins.Transform.DbTable;
 
-public class TableTransformer : ISyncTransformer
+public class TableTransform : ISyncTransform
 {
   public string Produce { get; init; }
   public string[] DependsOn { get; init; }
+  public string QualifiedId => $"database-table-{_table}";
+  public string Name => $"Transform {_table}";
+
+  public string Key { get; init; }
+
   private readonly string _table;
   private readonly Func<IReadOnlyDictionary<string, object?>, Dictionary<string, object?>> _mapRow;
 
-  public TableTransformer(
+  public TableTransform(
+    string pluginKey,
     string table,
     string produce,
     string[] dependsOn,
@@ -20,6 +26,7 @@ public class TableTransformer : ISyncTransformer
     DependsOn = dependsOn;
     _mapRow = mapRow;
     _table = table;
+    Key = pluginKey;
   }
 
   public Task<TransformContext> Transform(TransformContext context, CancellationToken cancellationToken)

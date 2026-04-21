@@ -1,6 +1,7 @@
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace AkkaSync.Plugins.Sink.Sqlite;
 
@@ -18,8 +19,23 @@ public class SqliteSinkProvider : IPluginProvider<ISyncSink>
 
   public IEnumerable<ISyncSink> Create(PluginSpec context, CancellationToken cancellationToken = default)
   {
-    var connectionString = _environment.ResolveConnectionString(context.Parameters["connectionString"]);
+    if (context.Parameters.TryGetProperty("connectionString", out var connectionElement))
+    {
+      var connectionString = connectionElement.GetString();
+      if(string.IsNullOrEmpty(connectionString))
+      {
+        throw new NullReferenceException("Connection string cannot be empty.");
+      }else
+      {
+        var qualifiedConnectionString = _environment.ResolveConnectionString(connectionString);
 
-    yield return new SqliteSink(connectionString, _factory.CreateLogger<SqliteSink>());
+        yield return new SqliteSink(qualifiedConnectionString, context.Key, _factory.CreateLogger<SqliteSink>());
+      }
+      
+    }
+
+    
   }
 }
+
+public sealed record SqliteSinkSpec(string ConnectionString);

@@ -1,4 +1,4 @@
-namespace AkkaSync.Plugins.Transformer.DbTable;
+namespace AkkaSync.Plugins.Transform.DbTable;
 
 using System;
 using System.Collections.Generic;

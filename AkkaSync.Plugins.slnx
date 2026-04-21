@@ -6,6 +6,6 @@
     <Project Path="src/AkkaSync.Plugins.Sink.Sqlite/AkkaSync.Plugins.Sink.Sqlite.csproj" />
     <Project Path="src/AkkaSync.Plugins.Source.File/AkkaSync.Plugins.Source.File.csproj" />
     <Project Path="src/AkkaSync.Plugins.Source.SqlServer/AkkaSync.Plugins.Source.SqlServer.csproj" />
-    <Project Path="src/AkkaSync.Plugins.Transformer.DbTable/AkkaSync.Plugins.Transformer.DbTable.csproj" />
+    <Project Path="src/AkkaSync.Plugins.Transformer.DbTable/AkkaSync.Plugins.Transform.DbTable.csproj" />
   </Folder>
 </Solution>

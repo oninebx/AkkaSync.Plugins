@@ -22,13 +22,18 @@ namespace AkkaSync.Plugins.Sink.Sqlite
       raw.SQLITE_CONSTRAINT_FOREIGNKEY
     ];
 
-    public DataSourceIdentity Identity => new("sqlite", "local", ExtractDbName(_connectionString));
+    public string QualifiedId => $"sqlite-{ExtractDbName(_connectionString)}";
 
-    public SqliteSink(string connectionString, ILogger<SqliteSink> logger)
+    public string Name => "Sink to Sqlite";
+
+    public string Key { get; init; }
+
+    public SqliteSink(string connectionString, string pluginKey, ILogger<SqliteSink> logger)
     {
       _connectionString = connectionString;
+      Key = pluginKey;
       _logger = logger;
-      _logger.LogError("SqliteSink initialized with connection string: {ConnectionString}.", _connectionString);
+      _logger.LogInformation("SqliteSink initialized with connection string: {ConnectionString}.", _connectionString);
     }
     public async Task WriteAsync(IEnumerable<TransformContext> contextBatch, CancellationToken cancellationToken)
     {
@@ -130,7 +135,7 @@ namespace AkkaSync.Plugins.Sink.Sqlite
       if (string.IsNullOrWhiteSpace(dataSource))
         throw new InvalidOperationException("Data Source not found in connection string.");
 
-      return NormalizePath(dataSource);
+      return Path.GetFileNameWithoutExtension(dataSource).ToLowerInvariant();
     }
 
     private static string NormalizePath(string path)
