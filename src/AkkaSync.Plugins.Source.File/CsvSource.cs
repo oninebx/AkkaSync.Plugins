@@ -91,7 +91,7 @@ public class CsvSource : ISyncSource
       values = ParseCsvLine(line, _delimiter);
       if (values.Length != headers.Length)
       {
-        error = new ErrorContext("source", $"CSV format error at line {index} in file {_filePath}: Column count does not match header", index.ToString());
+        error = new ErrorContext(QualifiedId, $"CSV format error at line {index} in file {_filePath}: Column count does not match header", index.ToString());
       }
       else
       {

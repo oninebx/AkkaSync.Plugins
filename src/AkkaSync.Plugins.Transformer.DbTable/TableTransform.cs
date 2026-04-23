@@ -29,11 +29,19 @@ public class TableTransform : ISyncTransform
     Key = pluginKey;
   }
 
-  public Task<TransformContext> Transform(TransformContext context, CancellationToken cancellationToken)
+  public Task<ErrorContext?> Transform(TransformContext context, CancellationToken cancellationToken)
   {
-    var mappedRow = _mapRow(context.RawData);
-    context.TryProduce(_table, mappedRow);
-    return Task.FromResult(context);
+    try
+    {
+      var mappedRow = _mapRow(context.RawData);
+      context.TryProduce(_table, mappedRow);
+      return Task.FromResult<ErrorContext?>(null);
+    }
+    catch (Exception ex)
+    {
+      return Task.FromResult<ErrorContext?>(new ErrorContext(QualifiedId, ex.Message, context.Cursor));
+    }
+    
   }
 }
 
