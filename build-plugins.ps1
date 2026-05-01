@@ -44,6 +44,7 @@ Get-ChildItem -Path "src" -Directory | ForEach-Object {
         if ($enabled) {
             $id = $manifest.id
             $version = $manifest.version
+            $provider = $manifest.provider
 
             Write-Host ""
             Write-Host "➡️ Building $id v$version"
@@ -103,6 +104,7 @@ Get-ChildItem -Path "src" -Directory | ForEach-Object {
                 id = $id
                 version = $version
                 url = $url
+                provider = $provider
                 checksum = "sha256:$($sha256.Hash)"
             }
 

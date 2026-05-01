@@ -14,9 +14,10 @@
 // ============================================================
 
 {
-  "schemaVersion": "1.0",                        // Manifest specification version
+  "schemaVersion": "1.0",                     // Manifest specification version
   "id": "AkkaSync.Plugins.Sink.Sqlite",       // Unique plugin ID (required)
-  "version": "1.0.0"                          // Plugin version (required, SemVer)
+  "version": "1.0.0",                         // Plugin version (required, SemVer)
+  "provider": "SqliteSinkProvider"            // Plugin Provider Name (required)
 
   // Optional fields with defaults
   // "displayName": "SQLite Sink Plugin",       // Defaults to id if not set

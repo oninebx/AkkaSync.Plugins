@@ -1,13 +1,13 @@
 using AkkaSync.Abstractions;
 using AkkaSync.Abstractions.Models;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace AkkaSync.Plugins.Sources;
 
 public class FolderWatcherSourceProvider : IPluginProvider<ISyncSource>
 {
   public string Key => nameof(FolderWatcherSourceProvider);
+
   private readonly ILoggerFactory _factory;
   private readonly ISyncEnvironment _environment;
 

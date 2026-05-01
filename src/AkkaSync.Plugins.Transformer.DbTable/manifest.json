@@ -1,5 +1,6 @@
 {
   "schemaVersion": "1.0",
   "id": "AkkaSync.Plugins.Transform.DbTable",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "provider": "TableTransformProvider"
 }
