@@ -26,6 +26,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq zip python3
 
+      - name: Restore (CI config)
+        run: dotnet restore AkkaSync.Plugins.sln --configfile nuget.ci.config
+
       - name: Build & Package Plugins
         run: |
           mkdir -p release
