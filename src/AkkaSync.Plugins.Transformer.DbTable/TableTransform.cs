@@ -7,8 +7,7 @@ public class TableTransform : ISyncTransform
 {
   public string Produce { get; init; }
   public string[] DependsOn { get; init; }
-  public string QualifiedId => $"database-table-{_table}";
-  public string Name => $"Transform {_table}";
+  public string Id { get; init; } = Guid.NewGuid().ToString("N");
 
   public string Key { get; init; }
 
@@ -39,7 +38,7 @@ public class TableTransform : ISyncTransform
     }
     catch (Exception ex)
     {
-      return Task.FromResult<ErrorContext?>(new ErrorContext(QualifiedId, ex.Message, context.Cursor));
+      return Task.FromResult<ErrorContext?>(new ErrorContext(Id, ex.Message, context.Cursor));
     }
     
   }

@@ -23,7 +23,7 @@ public class CsvSource : ISyncSource
 
     _id = new Lazy<string>(() =>
     {
-      return environment.ComputeSha256(Type, QualifiedId);
+      return environment.ComputeSha256(Type, Path.GetFullPath(_filePath));
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
     _etag = new Lazy<string>(() =>
@@ -44,12 +44,6 @@ public class CsvSource : ISyncSource
 
   public string ETag => _etag.Value;
 
-  //  Path.GetFullPath(_filePath).Replace('\\', '/').ToLowerInvariant();
-  public string QualifiedId => $"csv-{Path.GetFileNameWithoutExtension(_filePath).ToLowerInvariant()}";
-
-  public string Name => $"Extract from CSV";
-
-  
 
   public async IAsyncEnumerable<(TransformContext? context, ErrorContext? error)> ReadAsync(string? cursor, [EnumeratorCancellation] CancellationToken cancellationToken)
   {
@@ -91,7 +85,7 @@ public class CsvSource : ISyncSource
       values = ParseCsvLine(line, _delimiter);
       if (values.Length != headers.Length)
       {
-        error = new ErrorContext(QualifiedId, $"CSV format error at line {index} in file {_filePath}: Column count does not match header", index.ToString());
+        error = new ErrorContext(Id, $"CSV format error at line {index} in file {_filePath}: Column count does not match header", index.ToString());
       }
       else
       {

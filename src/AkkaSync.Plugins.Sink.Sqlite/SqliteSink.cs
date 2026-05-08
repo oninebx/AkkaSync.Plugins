@@ -22,9 +22,7 @@ namespace AkkaSync.Plugins.Sink.Sqlite
       raw.SQLITE_CONSTRAINT_FOREIGNKEY
     ];
 
-    public string QualifiedId => $"sqlite-{ExtractDbName(_connectionString)}";
-
-    public string Name => "Sink to Sqlite";
+    public string Id { get; init; } = Guid.NewGuid().ToString("N");
 
     public string Key { get; init; }
 
@@ -41,7 +39,7 @@ namespace AkkaSync.Plugins.Sink.Sqlite
       var errors = new List<ErrorContext>();
       if (contextBatch == null || !contextBatch.Any())
       {
-        errors.Add(new ErrorContext(QualifiedId, "No data detected to sink", "-1"));
+        errors.Add(new ErrorContext(Id, "No data detected to sink", "-1"));
         return errors;
       }
       await _writeLock.WaitAsync(cancellationToken);
@@ -52,11 +50,6 @@ namespace AkkaSync.Plugins.Sink.Sqlite
 
         await connection.OpenAsync(cancellationToken);
         using var transaction = connection.BeginTransaction();
-
-
-        //var tables = contextBatch.Where(ctx => ctx?.Artifacts?.Count > 0)
-        //                    .SelectMany(ctx => ctx.Artifacts)
-        //                    .GroupBy(t => t.Key);
 
         var (rows, rowErrors) = ExtractRows(contextBatch);
         errors.AddRange(rowErrors);
@@ -72,12 +65,6 @@ namespace AkkaSync.Plugins.Sink.Sqlite
               cancellationToken);
 
           errors.AddRange(insertErrors);
-
-          //  tableName = table.Key;
-
-          //  var rows = table.Select(t => t.Value).Where(r => r != null && r is Dictionary<string, object?> d && d.Count > 0)
-          //                    .Cast<Dictionary<string, object?>>();
-          //  await InsertTableDataAsync(tableName, rows, connection, transaction, cancellationToken);
         }
 
         await transaction.CommitAsync(cancellationToken);
@@ -114,7 +101,7 @@ namespace AkkaSync.Plugins.Sink.Sqlite
           else
           {
             errors.Add(new ErrorContext(
-                QualifiedId,
+                Id,
                 $"Invalid artifact for table '{key}'",
                 ctx.Cursor.ToString()
             ));
@@ -166,7 +153,7 @@ namespace AkkaSync.Plugins.Sink.Sqlite
         catch (SqliteException ex) when (RECOVERABLE_ERROR_CODE.Contains(ex.SqliteErrorCode))
         {
           _logger.LogWarning(ex, "Recoverable error inserting row into {TableName}, skipping row.", tableName);
-          errors.Add(new ErrorContext(QualifiedId, $"Recoverable error inserting row into {table}, skipping row.", row.Cursor));
+          errors.Add(new ErrorContext(Id, $"Recoverable error inserting row into {table}, skipping row.", row.Cursor));
           continue;
         }
       }

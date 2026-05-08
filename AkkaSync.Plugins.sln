@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11605.240 stable
+VisualStudioVersion = 18.4.11605.240
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 	ProjectSection(SolutionItems) = preProject
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaSync.Plugins.Transform.DbTable", "src\AkkaSync.Plugins.Transformer.DbTable\AkkaSync.Plugins.Transform.DbTable.csproj", "{19BF3334-0750-4631-FD4A-F5BF35D9F66F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{EC1EC49C-2334-445D-1D62-E7CC52E1242E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC1EC49C-2334-445D-1D62-E7CC52E1242E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC1EC49C-2334-445D-1D62-E7CC52E1242E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19BF3334-0750-4631-FD4A-F5BF35D9F66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19BF3334-0750-4631-FD4A-F5BF35D9F66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BF3334-0750-4631-FD4A-F5BF35D9F66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19BF3334-0750-4631-FD4A-F5BF35D9F66F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 		{12599636-61DE-22F2-FF0B-99A543F7E6DC} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{F7552922-4413-E85C-240D-BE55BE0AFC4D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{EC1EC49C-2334-445D-1D62-E7CC52E1242E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{19BF3334-0750-4631-FD4A-F5BF35D9F66F} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63DA6A81-2559-4A2A-BEB6-D78B9A36EE78}
